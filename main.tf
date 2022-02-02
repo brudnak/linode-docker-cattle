@@ -37,7 +37,7 @@ resource "linode_instance" "rancher_machine" {
     inline = [
       "chmod u+x setup.sh",
       "sudo ./setup.sh",
-      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged rancher/rancher:${var.rancher_version} -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password}"
+      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password} rancher/rancher:${var.rancher_version}"
     ]
   }
 }
