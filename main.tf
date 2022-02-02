@@ -15,7 +15,7 @@ provider "linode" {
 
 # linode
 resource "linode_instance" "rancher_machine" {
-  label     = "terraform-brudnak"
+  label     = var.instance_name
   image     = "linode/ubuntu20.04"
   region    = "us-west"
   type      = "g6-standard-4"
@@ -60,3 +60,8 @@ variable "my_bootstrap_password" {}
 
 # Rancher version set like the following "v2.6-head" in tfvars
 variable "rancher_version" {}
+
+# Name the Linode instance receives
+variable "instance_name" {
+
+}
