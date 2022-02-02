@@ -11,3 +11,13 @@ To make this script work you'll need to create a `terraform.tfvars` file within 
 3. `rancher_version` : Rancher version that you want to use in a format with `v` like the following `v2.6-head`
 4. `my_bootstrap_password` : Initial bootstrap password that you'll want to login to Rancher with
 5. `instance_name` : Name you'd like the Linode instance to have
+
+It should look like the following:
+
+```tf
+token                 = "your-linode-token-goes-here"
+root_pass             = "root-password-that-you-want-to-generate"
+rancher_version       = "v2.6-head"
+my_bootstrap_password = "bootstrap-password-to-login-rancher-with"
+instance_name         = "name-of-your-linode-instance"
+```

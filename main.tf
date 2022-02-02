@@ -62,6 +62,4 @@ variable "my_bootstrap_password" {}
 variable "rancher_version" {}
 
 # Name the Linode instance receives
-variable "instance_name" {
-
-}
+variable "instance_name" {}
