@@ -29,14 +29,14 @@ resource "linode_instance" "rancher_machine" {
   }
 
   provisioner "file" {
-    source      = "scripts/rancher-init.sh"
-    destination = "rancher-init.sh"
+    source      = "scripts/setup.sh"
+    destination = "setup.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod u+x rancher-init.sh",
-      "sudo ./rancher-init.sh",
+      "chmod u+x setup.sh",
+      "sudo ./setup.sh",
       "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged rancher/rancher:${var.rancher_version} -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password}"
     ]
   }
