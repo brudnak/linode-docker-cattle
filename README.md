@@ -21,3 +21,12 @@ rancher_version       = "v2.6-head"
 my_bootstrap_password = "bootstrap-password-to-login-rancher-with"
 instance_name         = "name-of-your-linode-instance"
 ```
+
+### How to run 
+
+1. Download the code
+2. Create your `terraform.tfvars` file with the above fields
+3. Now run the following commands
+    1. `terraform init`
+    2. `terraform apply`
+    3. It will ask you to type `Yes` to confirm what you will be creating
