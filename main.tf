@@ -19,7 +19,7 @@ locals {
 }
 
 # linode
-resource "linode_instance" "rancher_machine" {
+resource "linode_instance" "li" {
 
   # looping through each value in rancher_setups
   for_each = local.rancher_setups
@@ -56,6 +56,11 @@ resource "linode_instance" "rancher_machine" {
       each.value.cmd
     ]
   }
+}
+output "ipv4" {
+  value = [
+    for li in linode_instance.li: li.ipv4
+  ]
 }
 
 # token variable is your Linode access token

@@ -48,3 +48,20 @@ docker run -d -p 80:80 -p 443:443 --restart=no --privileged rancher/rancher:v2.6
 `--acme-domain your-domain-goes-here`
 
 This way we can avoid running into issues with self signed certs while testing.
+
+### Output
+
+You don't even need to login to Linode to get your IP address. It's displayed in the output from terraform like the following.
+
+```tf
+Outputs:
+
+ipv4 = [
+  toset([
+    "0.0.0.0",
+  ]),
+  toset([
+    "0.0.0.0",
+  ]),
+]
+```
