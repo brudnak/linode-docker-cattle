@@ -42,6 +42,10 @@ resource "linode_instance" "rancher_machine" {
 
   provisioner "file" {
     source      = "scripts/setup.sh"
+    # this setup.sh script is a bit pointless. it's only
+    # running basic commands that could be executed in the 
+    # remote-exec provisioner below. leaving it here for
+    # an example though. 
     destination = "setup.sh"
   }
 
