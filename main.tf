@@ -11,11 +11,21 @@ provider "linode" {
   api_version = "v4beta"
 }
 
-
+locals {
+  rancher_setups = {
+    "repro-rancher-terraform" = { name = "repro-${var.your_name}-terraform", cmd = "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password} rancher/rancher:${var.repro_version}" },
+    "valid-rancher-terraform" = { name = "valid-${var.your_name}-terraform", cmd = "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password} rancher/rancher:${var.valid_version}" },
+  }
+}
 
 # linode
 resource "linode_instance" "rancher_machine" {
-  label     = var.instance_name
+
+  # looping through each value in rancher_setups
+  for_each = local.rancher_setups
+
+  # what the linode instance will be named
+  label     = each.value.name
   image     = "linode/ubuntu20.04"
   region    = "us-west"
   type      = "g6-standard-4"
@@ -25,7 +35,9 @@ resource "linode_instance" "rancher_machine" {
     type     = "ssh"
     user     = "root"
     password = var.root_pass
-    host     = one(linode_instance.rancher_machine.ipv4)
+    # TODO: research one()
+    # for some reason this only works with one()
+    host     = one(self.ipv4)
   }
 
   provisioner "file" {
@@ -37,29 +49,25 @@ resource "linode_instance" "rancher_machine" {
     inline = [
       "chmod u+x setup.sh",
       "sudo ./setup.sh",
-      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password} rancher/rancher:${var.rancher_version}"
+      each.value.cmd
     ]
   }
 }
 
-output "ipv4" {
-  value       = one(linode_instance.rancher_machine.ipv4)
-  description = "The IP address of the Linode instance that was created. The Rancher bootstrap password was set in the .tfvars file. So there is no need to SSH into the server and run docker commands to get the password."
-}
+# token variable is your Linode access token
+variable "token" {}    
 
-# variables
+# root_pass variable is the password that gets assigned to SSH into the Linode instance
+variable "root_pass" {}             
 
-# Linode access token
-variable "token" {}
+# repro_version is what version of Rancher you want to reproduce an issue on e.g. "v2.6.3"
+variable "repro_version" {}
 
-# Root password for the Linode instance
-variable "root_pass" {}
+# valid_version is what version of Rancher you want to validate an issue on e.g. "v2.6-head"
+variable "valid_version" {}
 
-# Setting our own bootstrap password for Rancher
-variable "my_bootstrap_password" {}
+# my_bootstrap_password is what gets assigned as your admin password for logging into the Rancher web UI
+variable "my_bootstrap_password" {} 
 
-# Rancher version set like the following "v2.6-head" in tfvars
-variable "rancher_version" {}
-
-# Name the Linode instance receives
-variable "instance_name" {}
+# your_name is a unique value that gets inserted into your Linode instance label
+variable "your_name" {}
