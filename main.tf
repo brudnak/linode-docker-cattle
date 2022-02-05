@@ -3,80 +3,144 @@ terraform {
     linode = {
       source = "linode/linode"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "3.74.0"
+    }
   }
 }
 
 provider "linode" {
-  token       = var.token
+  token       = var.linode_access_token
   api_version = "v4beta"
 }
 
+# local variables used accross creation of resources in Linode & AWS
 locals {
-  rancher_setups = {
-    "repro-rancher-terraform" = { name = "repro-${var.your_name}-terraform", cmd = "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password} rancher/rancher:${var.repro_version}" },
-    "valid-rancher-terraform" = { name = "valid-${var.your_name}-terraform", cmd = "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.my_bootstrap_password} rancher/rancher:${var.valid_version}" },
+  configuration_buckets = {
+    "bucket_1" = {
+
+      linode_label = "repro-${var.your_name}-terraform",
+
+      linode_region = "us-west",
+
+      docker_run_rancher_command = <<EOF
+
+    docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged \
+    -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_reproduction_version} \
+    --acme-domain ${var.your_name}-${var.rancher_reproduction_version}.${var.qa_aws_route53_hosted_zone}
+    
+    EOF
+
+      name_appended_to_aws_route_53_hosted_zone = "${var.your_name}-${var.rancher_reproduction_version}"
+
+    },
+
+    "bucket_2" = {
+
+
+      linode_label = "valid-${var.your_name}-terraform",
+
+      linode_region = "us-west"
+
+      docker_run_rancher_command = <<EOF
+
+    docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged \
+    -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_validation_version} \
+    --acme-domain ${var.your_name}-${var.rancher_validation_version}.${var.qa_aws_route53_hosted_zone}
+    
+    EOF
+
+      name_appended_to_aws_route_53_hosted_zone = "${var.your_name}-${var.rancher_validation_version}"
+    },
   }
 }
 
-# linode
+
 resource "linode_instance" "li" {
 
-  # looping through each value in rancher_setups
-  for_each = local.rancher_setups
+  # looping through each bucket to get differnt docker commands and other various data
+  for_each = local.configuration_buckets
 
-  # what the linode instance will be named
-  label     = each.value.name
+  label     = each.value.linode_label
   image     = "linode/ubuntu20.04"
-  region    = "us-west"
+  region    = each.value.linode_region
   type      = "g6-standard-4"
-  root_pass = var.root_pass
+  root_pass = var.linode_ssh_root_password
 
   connection {
     type     = "ssh"
     user     = "root"
-    password = var.root_pass
-    # TODO: research one()
-    # for some reason this only works with one()
+    password = var.linode_ssh_root_password
     host     = one(self.ipv4)
   }
 
+  # this file provisioner isn't really needed but is left as an example
+  # all it does is update and install docker
   provisioner "file" {
     source      = "scripts/setup.sh"
-    # this setup.sh script is a bit pointless. it's only
-    # running basic commands that could be executed in the 
-    # remote-exec provisioner below. leaving it here for
-    # an example though. 
     destination = "setup.sh"
   }
 
+  # this remote-exec provisioner is executing the file from above and running a different docker run
+  # command on each Linode instance, installing two different versions of Rancher
   provisioner "remote-exec" {
     inline = [
       "chmod u+x setup.sh",
       "sudo ./setup.sh",
-      each.value.cmd
+      each.value.docker_run_rancher_command
     ]
   }
 }
+
+# this output is outputting the ip addresses for the linode 
+# instances incase you need to ssh into them for logs etc.
 output "ipv4" {
   value = [
-    for li in linode_instance.li: li.ipv4
+    for li in linode_instance.li : li.ipv4
   ]
 }
 
-# token variable is your Linode access token
-variable "token" {}    
+# this outout is the route53 urls, this way
+# you don't need to log into any cloud service
+# to start testing Rancher
+output "route53_urls" {
+  value = [
+    for www in aws_route53_record.www : www.fqdn
+  ]
+}
 
-# root_pass variable is the password that gets assigned to SSH into the Linode instance
-variable "root_pass" {}             
+provider "aws" {
+  region     = "us-east-2"
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
+}
 
-# repro_version is what version of Rancher you want to reproduce an issue on e.g. "v2.6.3"
-variable "repro_version" {}
+# this is getting the ID for our most used hosted zone
+data "aws_route53_zone" "zone" {
+  name = var.qa_aws_route53_hosted_zone
+}
 
-# valid_version is what version of Rancher you want to validate an issue on e.g. "v2.6-head"
-variable "valid_version" {}
 
-# my_bootstrap_password is what gets assigned as your admin password for logging into the Rancher web UI
-variable "my_bootstrap_password" {} 
+resource "aws_route53_record" "www" {
 
-# your_name is a unique value that gets inserted into your Linode instance label
+  # looping through our buckets to create two
+  # AWS Route53 records, one for each Linode instance
+  for_each = local.configuration_buckets
+
+  zone_id = data.aws_route53_zone.zone.zone_id
+  name    = each.value.name_appended_to_aws_route_53_hosted_zone
+  type    = "A"
+  ttl     = "1209600"
+  records = [linode_instance.li[each.key].ip_address]
+}
+
+variable "linode_access_token" {}
+variable "linode_ssh_root_password" {}
+variable "rancher_reproduction_version" {}
+variable "rancher_validation_version" {}
+variable "rancher_bootstrap_password" {}
 variable "your_name" {}
+variable "aws_access_key" {}
+variable "aws_secret_key" {}
+variable "qa_aws_route53_hosted_zone" {}
