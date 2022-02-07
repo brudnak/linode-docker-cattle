@@ -95,18 +95,18 @@ resource "linode_instance" "li" {
 
 # this output is outputting the ip addresses for the linode 
 # instances incase you need to ssh into them for logs etc.
-output "ipv4" {
+output "linode_instance_ip_addresses" {
   value = [
-    for li in linode_instance.li : li.ipv4
+    for li in linode_instance.li : "Linode IP address incase you need to SSH into it: ${li.ip_address}"
   ]
 }
 
 # this outout is the route53 urls, this way
 # you don't need to log into any cloud service
 # to start testing Rancher
-output "route53_urls" {
+output "aws_route53_urls" {
   value = [
-    for www in aws_route53_record.www : www.fqdn
+    for www in aws_route53_record.www : "your rancher ULR: https://${www.fqdn}"
   ]
 }
 

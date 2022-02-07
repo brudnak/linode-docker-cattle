@@ -65,20 +65,22 @@ After following the Setup Guide above
 
 You don't even need to login to Linode to get your IP address. It's displayed in the output from terraform like the following.
 
+You cal **ALWAYS** get these outputs by running the command
+
+```shell
+terraform output
+```
+
 ```tf
 Outputs:
 
-ipv4 = [
-  toset([
-    "0.0.0.0",
-  ]),
-  toset([
-    "0.0.0.0",
-  ]),
+aws_route53_urls = [
+  "your rancher ULR: https://yourname1.something.something.com",
+  "your rancher ULR: https://yourname2.something.something.com",
 ]
-route53_urls = [
-  "your-name-one.something.something.something",
-  "your-name-two.something.something.something",
+linode_instance_ip_addresses = [
+  "Linode IP address incase you need to SSH into it: 0.0.0.0",
+  "Linode IP address incase you need to SSH into it: 0.0.0.0",
 ]
 ```
 
