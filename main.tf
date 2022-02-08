@@ -27,7 +27,8 @@ locals {
       docker_run_rancher_command = <<EOF
 
     docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged \
-    -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_reproduction_version} \
+    -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} \
+    rancher/rancher:${var.rancher_reproduction_version} \
     --acme-domain ${var.your_name}-${var.rancher_reproduction_version}.${var.qa_aws_route53_hosted_zone}
     
     EOF
@@ -46,7 +47,8 @@ locals {
       docker_run_rancher_command = <<EOF
 
     docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged \
-    -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_validation_version} \
+    -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} \
+    rancher/rancher:${var.rancher_validation_version} \
     --acme-domain ${var.your_name}-${var.rancher_validation_version}.${var.qa_aws_route53_hosted_zone}
     
     EOF
