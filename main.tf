@@ -103,16 +103,45 @@ output "aws_route53_urls" {
 # Variable Section
 
 # Linode Specific Variables
-variable "linode_access_token" {}
-variable "linode_ssh_root_password" {}
+variable "linode_access_token" {
+  type        = string
+  description = "This is the Linode access token to create resources in Linode."
+}
+
+
+variable "linode_ssh_root_password" {
+  type        = string
+  description = "This value is what gets assigned as your ssh password to remote into the Linode instances."
+}
 
 # Rancher Specific Variables within Linode
-variable "rancher_bootstrap_password" {}
+variable "rancher_bootstrap_password" {
+  type        = string
+  description = "This is the bootstrap password that gets assigned to login to the Rancher UI."
+}
 
 # AWS Specific Variables
-variable "aws_access_key" {}
-variable "aws_secret_key" {}
-variable "aws_route53_fqdn" {}
+variable "aws_access_key" {
+  type        = string
+  description = "This is the AWS access key."
+}
+
+variable "aws_secret_key" {
+  type        = string
+  description = "This is the AWS secret key."
+}
+
+variable "aws_route53_fqdn" {
+  type        = string
+  description = "This should be the most used fully qualified domain name in the hosted zone in AWS Route 53."
+}
 
 # Variable Shared Across Rancher, Linode, and AWS
-variable "rancher_instances" {}
+variable "rancher_instances" {
+  type = list(object({
+    version : string,
+    url : string,
+    linonde_name : string,
+  }))
+  description = "Rancher instances is a list/array of objects. Each object creates a Linode instance and AWS Route53 record."
+}
