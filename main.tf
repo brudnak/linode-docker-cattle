@@ -141,7 +141,7 @@ variable "rancher_instances" {
   type = list(object({
     version : string,
     url : string,
-    linonde_name : string,
+    linode_name : string,
   }))
   description = "Rancher instances is a list/array of objects. Each object creates a Linode instance and AWS Route53 record."
 }
