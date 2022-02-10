@@ -63,7 +63,7 @@ resource "linode_instance" "linode_instance" {
       "sudo apt update",
       "sudo apt install -y docker.io",
       "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${var.rancher_instances[count.index].url_prefix_for_aws_route53}.${var.aws_route53_fqdn}",
-      "sudo"
+      "sudo hostnamectl set-hostname ${var.rancher_instances[count.index].linode_set_system_hostname}"
     ]
   }
 }
@@ -137,12 +137,17 @@ variable "aws_route53_fqdn" {
   description = "This should be the most used fully qualified domain name in the hosted zone in AWS Route 53."
 }
 
-# Variable Shared Across Rancher, Linode, and AWS
+# - Variable Shared Across Rancher, Linode, and AWS
+# ---- rancher_version is injected into the docker run command to set the version of Rancer you want to use.
+# ---- url_prefix_for_aws_route53 is used as a prefix when creating a record in AWS Route53.
+# ---- linode_instance_label is what the Linode instance is named.
+# ---- linode_set_system_hostname sets the Linode instance hostname, making it easy to know where you are when using ssh.
 variable "rancher_instances" {
   type = list(object({
     rancher_version : string,
     url_prefix_for_aws_route53 : string,
     linode_instance_label : string,
+    linode_set_system_hostname : string,
   }))
   description = "Rancher instances is a list/array of objects. Each object creates a Linode instance and AWS Route53 record."
 }
