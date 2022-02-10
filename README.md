@@ -32,8 +32,8 @@ aws_route53_fqdn = "look-up-the-most-used-hosted-zone-in-route53"
 
 
 # Variable Shared Across Rancher, Linode, and AWS
-rancher_version = [{
-  version : "v2.6.3",
+rancher_instances = [{
+  rancher_version : "v2.6.3",
   url_prefix_for_aws_route53 : "whateveryouwant1",
   linode_instance_label : "whateveryouwant1",
   },
@@ -42,7 +42,6 @@ rancher_version = [{
     url_prefix_for_aws_route53 : "whateveryouwant2",
     linode_instance_label : "whateveryouwant2",
 }]
-
 ```
 ### How to run 
 
@@ -97,18 +96,18 @@ The addition would look something like the following:
 ```tf
 # Variable Shared Across Rancher, Linode, and AWS
 rancher_instances = [{
-  version : "v2.6.3",
-  url : "whateveryouwant1",
-  linode_name : "whateveryouwant1",
+  rancher_version : "v2.6.3",
+  url_prefix_for_aws_route53 : "whateveryouwant1",
+  linode_instance_label : "whateveryouwant1",
   },
   {
-    version : "v2.6-head",
-    url : "whateveryouwant2",
-    linode_name : "whateveryouwant2",
+    rancher_version : "v2.6-head",
+    url_prefix_for_aws_route53 : "whateveryouwant2",
+    linode_instance_label : "whateveryouwant2",
 },
- {
-    version : "v2.5.11",
-    url : "whateveryouwant3",
-    linode_name : "whateveryouwant3",
-}]
+  {
+    rancher_version : "v2.5.12",
+    url_prefix_for_aws_route53 : "whateveryouwant3",
+    linode_instance_label : "whateveryouwant3",
+}]]
 ```
