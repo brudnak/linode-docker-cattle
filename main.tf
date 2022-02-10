@@ -76,7 +76,7 @@ resource "aws_route53_record" "aws_route53_record" {
   zone_id = data.aws_route53_zone.zone.zone_id
   name    = var.rancher_instances[count.index].url_prefix_for_aws_route53
   type    = "A"
-  ttl     = "300"
+  ttl     = "60"
   records = [linode_instance.linode_instance[count.index].ip_address]
 }
 
