@@ -36,7 +36,7 @@ resource "linode_instance" "linode_instance" {
   # is a whole number, Terraform will create that many instances,
   # more can be read about it here: https://www.terraform.io/language/meta-arguments/count.
   count     = length(var.rancher_instances)
-  label     = var.rancher_instances[count.index].linode_name
+  label     = var.rancher_instances[count.index].linode_instance_label
   image     = "linode/ubuntu20.04"
   region    = "us-west"
   type      = "g6-standard-4"
@@ -62,7 +62,8 @@ resource "linode_instance" "linode_instance" {
     inline = [
       "sudo apt update",
       "sudo apt install -y docker.io",
-      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].version} --acme-domain ${var.rancher_instances[count.index].url}.${var.aws_route53_fqdn}"
+      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${var.rancher_instances[count.index].url_prefix_for_aws_route53}.${var.aws_route53_fqdn}",
+      "sudo"
     ]
   }
 }
@@ -73,7 +74,7 @@ resource "linode_instance" "linode_instance" {
 resource "aws_route53_record" "aws_route53_record" {
   count   = length(var.rancher_instances)
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = var.rancher_instances[count.index].url
+  name    = var.rancher_instances[count.index].url_prefix_for_aws_route53
   type    = "A"
   ttl     = "300"
   records = [linode_instance.linode_instance[count.index].ip_address]
@@ -139,9 +140,9 @@ variable "aws_route53_fqdn" {
 # Variable Shared Across Rancher, Linode, and AWS
 variable "rancher_instances" {
   type = list(object({
-    version : string,
-    url : string,
-    linode_name : string,
+    rancher_version : string,
+    url_prefix_for_aws_route53 : string,
+    linode_instance_label : string,
   }))
   description = "Rancher instances is a list/array of objects. Each object creates a Linode instance and AWS Route53 record."
 }

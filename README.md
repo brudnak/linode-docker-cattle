@@ -32,15 +32,15 @@ aws_route53_fqdn = "look-up-the-most-used-hosted-zone-in-route53"
 
 
 # Variable Shared Across Rancher, Linode, and AWS
-rancher_instances = [{
+rancher_version = [{
   version : "v2.6.3",
-  url : "whateveryouwant1",
-  linode_name : "whateveryouwant1",
+  url_prefix_for_aws_route53 : "whateveryouwant1",
+  linode_instance_label : "whateveryouwant1",
   },
   {
-    version : "v2.6-head",
-    url : "whateveryouwant2",
-    linode_name : "whateveryouwant2",
+    rancher_version : "v2.6-head",
+    url_prefix_for_aws_route53 : "whateveryouwant2",
+    linode_instance_label : "whateveryouwant2",
 }]
 
 ```
