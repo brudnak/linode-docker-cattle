@@ -39,7 +39,7 @@ resource "linode_instance" "linode_instance" {
   label     = var.rancher_instances[count.index].linode_instance_label
   image     = "linode/ubuntu20.04"
   region    = "us-west"
-  type      = "g6-standard-4"
+  type      = "g6-standard-6"
   root_pass = var.linode_ssh_root_password
 
   # Creating an ssh connection with the Linode
