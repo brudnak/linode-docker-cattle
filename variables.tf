@@ -42,7 +42,6 @@ variable "rancher_instances" {
     rancher_version : string,
     url_prefix_for_aws_route53 : string,
     linode_instance_label : string,
-    linode_set_system_hostname : string,
   }))
   description = "Rancher instances is a list/array of objects. Each object creates a Linode instance and AWS Route53 record."
 }

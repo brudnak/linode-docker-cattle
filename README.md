@@ -36,13 +36,11 @@ rancher_instances = [{
   rancher_version : "v2.6.3",
   url_prefix_for_aws_route53 : "whateveryouwant1",
   linode_instance_label : "whateveryouwant1",
-  linode_set_system_hostname : "whateveryouwant1",
   },
   {
     rancher_version : "v2.6-head",
     url_prefix_for_aws_route53 : "whateveryouwant2",
     linode_instance_label : "whateveryouwant2",
-    linode_set_system_hostname : "whateveryouwant2",
 }]
 ```
 ### How to run 
@@ -101,18 +99,15 @@ rancher_instances = [{
   rancher_version : "v2.6.3",
   url_prefix_for_aws_route53 : "whateveryouwant1",
   linode_instance_label : "whateveryouwant1",
-  linode_set_system_hostname : "whateveryouwant1",
   },
   {
     rancher_version : "v2.6-head",
     url_prefix_for_aws_route53 : "whateveryouwant2",
     linode_instance_label : "whateveryouwant2",
-    linode_set_system_hostname : "whateveryouwant2",
 },
   {
     rancher_version : "v2.5.12",
     url_prefix_for_aws_route53 : "whateveryouwant3",
     linode_instance_label : "whateveryouwant3",
-    linode_set_system_hostname : "whateveryouwant3",
 }]]
 ```

@@ -2,6 +2,7 @@ terraform {
   required_providers {
     linode = {
       source = "linode/linode"
+      version = "1.29.4"
     }
     aws = {
       source  = "hashicorp/aws"
@@ -15,8 +16,6 @@ terraform {
 # For more information about providers, see the following: https://www.terraform.io/language/providers#where-providers-come-from.
 provider "linode" {
   token       = var.linode_access_token
-  api_version = "v4beta"
-
 }
 
 # The AWS provider.
@@ -63,7 +62,6 @@ resource "linode_instance" "linode_instance" {
       "sudo apt update",
       "sudo curl https://releases.rancher.com/install-docker/20.10.sh | sh",
       "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${var.rancher_instances[count.index].url_prefix_for_aws_route53}.${var.aws_route53_fqdn}",
-      "sudo hostnamectl set-hostname ${var.rancher_instances[count.index].linode_set_system_hostname}"
     ]
   }
 }
