@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     linode = {
-      source = "linode/linode"
+      source  = "linode/linode"
       version = "1.29.4"
     }
     aws = {
@@ -15,7 +15,7 @@ terraform {
 # Terraform itself, and each provider has its own release cadence and version numbers.
 # For more information about providers, see the following: https://www.terraform.io/language/providers#where-providers-come-from.
 provider "linode" {
-  token       = var.linode_access_token
+  token = var.linode_access_token
 }
 
 # The AWS provider.
@@ -40,6 +40,7 @@ resource "linode_instance" "linode_instance" {
   region    = "us-west"
   type      = "g6-standard-6"
   root_pass = var.linode_ssh_root_password
+  tags      = var.linode_tags
 
   # Creating an ssh connection with the Linode
   # instances that are being created.

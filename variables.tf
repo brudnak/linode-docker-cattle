@@ -32,6 +32,11 @@ variable "aws_route53_fqdn" {
   description = "This should be the most used fully qualified domain name in the hosted zone in AWS Route 53."
 }
 
+variable "linode_tags" {
+  type        = list
+  description = "Tags to add to the Linode instance."
+}
+
 # - Variable Shared Across Rancher, Linode, and AWS
 # ---- rancher_version is injected into the docker run command to set the version of Rancer you want to use.
 # ---- url_prefix_for_aws_route53 is used as a prefix when creating a record in AWS Route53.
