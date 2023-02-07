@@ -37,16 +37,19 @@ variable "linode_tags" {
   description = "Tags to add to the Linode instance."
 }
 
-# - Variable Shared Across Rancher, Linode, and AWS
-# ---- rancher_version is injected into the docker run command to set the version of Rancer you want to use.
-# ---- url_prefix_for_aws_route53 is used as a prefix when creating a record in AWS Route53.
-# ---- linode_instance_label is what the Linode instance is named.
-# ---- linode_set_system_hostname sets the Linode instance hostname, making it easy to know where you are when using ssh.
+variable "label_prefix" {
+  type = string
+  description = "The value added to the random pet name to associate it with yourelf. Shoud be maximum 3 characters for your initials."
+
+    validation {
+    condition     = length(var.label_prefix) <= 3
+    error_message = "The label prefix should not be any longer than 3 characters for your initials."
+  }
+}
+
 variable "rancher_instances" {
   type = list(object({
     rancher_version : string,
-    url_prefix_for_aws_route53 : string,
-    linode_instance_label : string,
   }))
   description = "Rancher instances is a list/array of objects. Each object creates a Linode instance and AWS Route53 record."
 }

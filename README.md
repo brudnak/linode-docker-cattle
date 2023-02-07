@@ -9,6 +9,12 @@ This terraform script is for Rancher QA to easily create two instances of docker
 
 :star: **The benefit is that it creates instances in Linode, along with a record in AWS Route53 so you can test without running into self signed certificate issues.** :star:
 
+## This Repository Pairs Really Well with my Other Repository to Clean Up Linode Instances Automatically
+
+https://github.com/brudnak/linode-daily-cleanup
+
+All you need to de is make sure the tag looking to be deleted matches the name in your linode_tags variables in the `terraform.tfvars` here
+
 ## Setup Guide
 
 1. Install Terraform on your local machine, instructions located here: [https://learn.hashicorp.com/tutorials/terraform/install-cli](https://learn.hashicorp.com/tutorials/terraform/install-cli)
@@ -18,30 +24,34 @@ This terraform script is for Rancher QA to easily create two instances of docker
 ```tf
 # Variable Section
 
-# Linode Specific Variables
-linode_access_token      = "generate-this-token-in-linode"
-linode_ssh_root_password = "whatever-you-want"
+# Shared Variables Between Linode & AWS
+label_prefix = "your-initials-must-be-less-than-or-equal-to-3-characters"
 
-# Rancher Specific Variables within Linode
-rancher_bootstrap_password = "whatever-you-want"
+# Linode Specific Variables
+linode_access_token      = "your-linode-api-token-you-create-on-linode"
+linode_ssh_root_password = "whatever-password-you-want-to-ssh-into-your-linode-instance"
+
+# The linode_tags variable isn't required but is helpful if you pair this repo, with my other repo to automatically cleanup your Linode instances based on tag names. That repository is located here. https://github.com/brudnak/linode-docker-cattle
+linode_tags              = ["your-name-goes-here"]
+
+# Rancher Specific Variables
+rancher_bootstrap_password = "whatever-password-your-want-for-rancher"
+
+# List/array or objects. However many objects you have in this list/array is how many Rancher/Linode instances will be created
+rancher_instances = [{
+  rancher_version : "v2.7.1",
+  }, {
+  rancher_version : "v2.7-head",
+  }
+]
 
 # AWS Specific Variables
-aws_access_key   = "generate-this-key-in-aws"
-aws_secret_key   = "generate-this-key-in-aws"
-aws_route53_fqdn = "look-up-the-most-used-hosted-zone-in-route53"
+aws_access_key   = "whatever-your-aws-access-key-is"
+aws_secret_key   = "whatever-your-aws-secret-key-is"
 
-
-# Variable Shared Across Rancher, Linode, and AWS
-rancher_instances = [{
-  rancher_version : "v2.6.3",
-  url_prefix_for_aws_route53 : "whateveryouwant1",
-  linode_instance_label : "whateveryouwant1",
-  },
-  {
-    rancher_version : "v2.6-head",
-    url_prefix_for_aws_route53 : "whateveryouwant2",
-    linode_instance_label : "whateveryouwant2",
-}]
+# Route53 fully qualified name should be in this format "something.something.something" the unique part will be added
+# with random words from Terraform plus your 3 character label prefix variable from above
+aws_route53_fqdn = "the-fully-qualified-domain-name-you-want-to-use-from-route53"
 ```
 ### How to run 
 
@@ -94,20 +104,38 @@ If you want to create more than two Rancher instances. All you need to do is add
 The addition would look something like the following:
 
 ```tf
-# Variable Shared Across Rancher, Linode, and AWS
+# Variable Section
+
+# Shared Variables Between Linode & AWS
+label_prefix = "your-initials-must-be-less-than-or-equal-to-3-characters"
+
+# Linode Specific Variables
+linode_access_token      = "your-linode-api-token-you-create-on-linode"
+linode_ssh_root_password = "whatever-password-you-want-to-ssh-into-your-linode-instance"
+
+# The linode_tags variable isn't required but is helpful if you pair this repo, with my other repo to automatically cleanup your Linode instances based on tag names. That repository is located here. https://github.com/brudnak/linode-docker-cattle
+linode_tags              = ["your-name-goes-here"]
+
+# Rancher Specific Variables
+rancher_bootstrap_password = "whatever-password-your-want-for-rancher"
+
+# List/array or objects. However many objects you have in this list/array is how many Rancher/Linode instances will be created
 rancher_instances = [{
-  rancher_version : "v2.6.3",
-  url_prefix_for_aws_route53 : "whateveryouwant1",
-  linode_instance_label : "whateveryouwant1",
-  },
-  {
-    rancher_version : "v2.6-head",
-    url_prefix_for_aws_route53 : "whateveryouwant2",
-    linode_instance_label : "whateveryouwant2",
-},
-  {
-    rancher_version : "v2.5.12",
-    url_prefix_for_aws_route53 : "whateveryouwant3",
-    linode_instance_label : "whateveryouwant3",
-}]]
+  rancher_version : "v2.7.1",
+  }, {
+  rancher_version : "v2.7-head",
+  }, {
+  rancher_version : "v2.6.10",
+  }, {
+  rancher_version : "v2.6-head",
+  }
+]
+
+# AWS Specific Variables
+aws_access_key   = "whatever-your-aws-access-key-is"
+aws_secret_key   = "whatever-your-aws-secret-key-is"
+
+# Route53 fully qualified name should be in this format "something.something.something" the unique part will be added
+# with random words from Terraform plus your 3 character label prefix variable from above
+aws_route53_fqdn = "the-fully-qualified-domain-name-you-want-to-use-from-route53"
 ```

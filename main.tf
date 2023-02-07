@@ -11,6 +11,11 @@ terraform {
   }
 }
 
+resource "random_pet" "random_pet" {
+  count  = length(var.rancher_instances)
+  prefix = var.label_prefix
+}
+
 # The Linode provider. Providers are distributed separately from
 # Terraform itself, and each provider has its own release cadence and version numbers.
 # For more information about providers, see the following: https://www.terraform.io/language/providers#where-providers-come-from.
@@ -35,7 +40,7 @@ resource "linode_instance" "linode_instance" {
   # is a whole number, Terraform will create that many instances,
   # more can be read about it here: https://www.terraform.io/language/meta-arguments/count.
   count     = length(var.rancher_instances)
-  label     = var.rancher_instances[count.index].linode_instance_label
+  label     = random_pet.random_pet[count.index].id
   image     = "linode/ubuntu20.04"
   region    = "us-west"
   type      = "g6-standard-6"
@@ -61,8 +66,10 @@ resource "linode_instance" "linode_instance" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt update",
+      "sudo sleep 5",
       "sudo curl https://releases.rancher.com/install-docker/20.10.sh | sh",
-      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${var.rancher_instances[count.index].url_prefix_for_aws_route53}.${var.aws_route53_fqdn}",
+      "sudo sleep 5",
+      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${random_pet.random_pet[count.index].id}.${var.aws_route53_fqdn}",
     ]
   }
 }
@@ -73,7 +80,7 @@ resource "linode_instance" "linode_instance" {
 resource "aws_route53_record" "aws_route53_record" {
   count   = length(var.rancher_instances)
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = var.rancher_instances[count.index].url_prefix_for_aws_route53
+  name    = random_pet.random_pet[count.index].id
   type    = "A"
   ttl     = "60"
   records = [linode_instance.linode_instance[count.index].ip_address]
