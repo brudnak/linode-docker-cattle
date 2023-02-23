@@ -66,10 +66,11 @@ resource "linode_instance" "linode_instance" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt update",
-      "sudo sleep 5",
       "sudo curl https://releases.rancher.com/install-docker/20.10.sh | sh",
-      "sudo sleep 5",
-      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${random_pet.random_pet[count.index].id}.${var.aws_route53_fqdn}",
+      "sudo usermod -aG docker ubuntu",
+      "sudo systemctl enable docker",
+      "sudo systemctl start docker",
+      "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${var.rancher_instances[count.index].url_prefix_for_aws_route53}.${var.aws_route53_fqdn}",
     ]
   }
 }
