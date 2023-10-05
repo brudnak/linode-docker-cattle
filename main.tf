@@ -67,9 +67,6 @@ resource "linode_instance" "linode_instance" {
     inline = [
       "sudo apt update",
       "sudo curl https://releases.rancher.com/install-docker/20.10.sh | sh",
-      "sudo usermod -aG docker ubuntu",
-      "sudo systemctl enable docker",
-      "sudo systemctl start docker",
       "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} rancher/rancher:${var.rancher_instances[count.index].rancher_version} --acme-domain ${random_pet.random_pet[count.index].id}.${var.aws_route53_fqdn}",
     ]
   }
