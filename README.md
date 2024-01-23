@@ -37,6 +37,8 @@ linode_tags              = ["your-name-goes-here"]
 # Rancher Specific Variables
 rancher_bootstrap_password = "whatever-password-your-want-for-rancher"
 
+dockerhub = "defaults to rancher/rancher but you may want rancherlabs etc"
+
 # List/array or objects. However many objects you have in this list/array is how many Rancher/Linode instances will be created
 rancher_instances = [{
   rancher_version : "v2.7.1",
