@@ -74,7 +74,7 @@ You can **ALWAYS** get these outputs by running the command
 terraform output
 ```
 
-```tf
+```shell
 Outputs:
 
 aws_route53_urls = [
@@ -118,6 +118,8 @@ linode_tags              = ["your-name-goes-here"]
 
 # Rancher Specific Variables
 rancher_bootstrap_password = "whatever-password-your-want-for-rancher"
+
+dockerhub = "defaults to rancher/rancher but you may want rancherlabs etc"
 
 # List/array or objects. However many objects you have in this list/array is how many Rancher/Linode instances will be created
 rancher_instances = [{

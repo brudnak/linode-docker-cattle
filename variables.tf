@@ -16,6 +16,12 @@ variable "rancher_bootstrap_password" {
   description = "This is the bootstrap password that gets assigned to login to the Rancher UI."
 }
 
+variable "dockerhub" {
+  type        = string
+  description = "The dockerhub repository where the image is pulled from"
+  default     = "rancher/rancher"
+}
+
 # AWS Specific Variables
 variable "aws_access_key" {
   type        = string
@@ -33,15 +39,15 @@ variable "aws_route53_fqdn" {
 }
 
 variable "linode_tags" {
-  type        = list
+  type        = list(any)
   description = "Tags to add to the Linode instance."
 }
 
 variable "label_prefix" {
-  type = string
+  type        = string
   description = "The value added to the random pet name to associate it with yourelf. Shoud be maximum 3 characters for your initials."
 
-    validation {
+  validation {
     condition     = length(var.label_prefix) <= 3
     error_message = "The label prefix should not be any longer than 3 characters for your initials."
   }
