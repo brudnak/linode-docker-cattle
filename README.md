@@ -55,6 +55,19 @@ aws_secret_key   = "whatever-your-aws-secret-key-is"
 # with random words from Terraform plus your 3 character label prefix variable from above
 aws_route53_fqdn = "the-fully-qualified-domain-name-you-want-to-use-from-route53"
 ```
+
+# Rancher Prime 🟦
+
+Need to test with Rancher Prime?
+
+Just set this field in `terraform.tfvars`:
+
+```tf
+dockerhub = "registry.rancher.com/rancher/rancher"
+```
+
+To: `registry.rancher.com/rancher/rancher`
+
 ### How to run 
 
 After following the Setup Guide above
