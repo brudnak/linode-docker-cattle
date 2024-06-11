@@ -41,9 +41,9 @@ dockerhub = "defaults to rancher/rancher but you may want rancherlabs etc"
 
 # List/array or objects. However many objects you have in this list/array is how many Rancher/Linode instances will be created
 rancher_instances = [{
-  rancher_version : "v2.7.1",
+  rancher_version : "v2.8.3",
   }, {
-  rancher_version : "v2.7-head",
+  rancher_version : "v2.9-head",
   }
 ]
 
@@ -93,12 +93,12 @@ terraform output
 Outputs:
 
 aws_route53_urls = [
-  "your rancher ULR: https://yourname1.something.something.com",
-  "your rancher ULR: https://yourname2.something.something.com",
+  "Rancher ULR: https://yourname1.something.something.com",
+  "Rancher ULR: https://yourname2.something.something.com",
 ]
 linode_instance_ip_addresses = [
-  "Linode IP address incase you need to SSH into it: 0.0.0.0",
-  "Linode IP address incase you need to SSH into it: 0.0.0.0",
+  "Linode IP address: 0.0.0.0",
+  "Linode IP address: 0.0.0.0",
 ]
 ```
 
@@ -138,13 +138,13 @@ dockerhub = "defaults to rancher/rancher but you may want rancherlabs etc"
 
 # List/array or objects. However many objects you have in this list/array is how many Rancher/Linode instances will be created
 rancher_instances = [{
-  rancher_version : "v2.7.1",
+  rancher_version : "v2.9-head",
+  }, {
+  rancher_version : "v2.8-head",
   }, {
   rancher_version : "v2.7-head",
   }, {
-  rancher_version : "v2.6.10",
-  }, {
-  rancher_version : "v2.6-head",
+  rancher_version : "v2.8.4",
   }
 ]
 

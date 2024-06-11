@@ -18,7 +18,7 @@ variable "rancher_bootstrap_password" {
 
 variable "dockerhub" {
   type        = string
-  description = "The dockerhub repository where the image is pulled from"
+  description = "The dockerhub repository where the image is pulled from."
   default     = "rancher/rancher"
 }
 

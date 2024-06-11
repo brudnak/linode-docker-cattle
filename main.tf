@@ -2,11 +2,11 @@ terraform {
   required_providers {
     linode = {
       source  = "linode/linode"
-      version = "1.29.4"
+      version = "2.22.0"
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "3.74.0"
+      version = "5.53.0"
     }
   }
 }
