@@ -2,7 +2,7 @@ terraform {
   required_providers {
     linode = {
       source  = "linode/linode"
-      version = "2.22.0"
+      version = "2.28.0"
     }
     aws = {
       source  = "hashicorp/aws"
@@ -41,7 +41,7 @@ resource "linode_instance" "linode_instance" {
   # more can be read about it here: https://www.terraform.io/language/meta-arguments/count.
   count     = length(var.rancher_instances)
   label     = random_pet.random_pet[count.index].id
-  image     = "linode/ubuntu20.04"
+  image     = "linode/ubuntu22.04"
   region    = "us-west"
   type      = "g6-standard-6"
   root_pass = var.linode_ssh_root_password
@@ -66,7 +66,7 @@ resource "linode_instance" "linode_instance" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt update",
-      "sudo curl https://releases.rancher.com/install-docker/20.10.sh | sh",
+      "sudo curl https://releases.rancher.com/install-docker/27.1.sh | sh",
       "docker run -d --restart=unless-stopped -p 80:80 -p 443:443 --privileged -e CATTLE_BOOTSTRAP_PASSWORD=${var.rancher_bootstrap_password} ${var.dockerhub}:${var.rancher_instances[count.index].rancher_version} --acme-domain ${random_pet.random_pet[count.index].id}.${var.aws_route53_fqdn}",
     ]
   }
