@@ -1,4 +1,4 @@
-# Linode Docker Cattle :cow:
+# :cow: Linode Docker Cattle 
 
 ## Purpose of this Script
 
